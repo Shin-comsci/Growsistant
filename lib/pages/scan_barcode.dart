@@ -9,7 +9,7 @@ class ScanBarcodePage extends StatefulWidget {
 }
 
 class _ScanBarcodePageState extends State<ScanBarcodePage> {
-  bool isScanned = false; // biar tidak double pindah halaman
+  ValueNotifier<bool> isScanned = ValueNotifier<bool>(true);
 
   @override
   Widget build(BuildContext context) {
@@ -21,8 +21,8 @@ class _ScanBarcodePageState extends State<ScanBarcodePage> {
           // Kamera untuk scanning barcode
           MobileScanner(
             onDetect: (barcodeCapture) {
-              if (!isScanned) {
-                setState(() => isScanned = true);
+              if (!isScanned.value) {
+                isScanned.value = true;
 
                 // Ambil data hasil scan (apa pun)
                 final List<Barcode> barcodes = barcodeCapture.barcodes;
@@ -65,12 +65,26 @@ class _ScanBarcodePageState extends State<ScanBarcodePage> {
             bottom: 100,
             child: Text(
               "Arahkan kamera ke barcode apa saja",
-              style: TextStyle(color: Colors.white.withOpacity(0.8), fontSize: 16),
+              style: TextStyle(color: Colors.white.withValues(alpha: 0.8), fontSize: 16),
             ),
           ),
         ],
       ),
     );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    if (mounted) {
+      Navigator.pushReplacementNamed(context, '/home');
+    }
+  }
+
+  @override
+  void dispose() {
+    isScanned.dispose();
+    super.dispose();
   }
 
   // Fungsi animasi garis scanner

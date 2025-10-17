@@ -1,0 +1,21 @@
+import 'package:flutter/material.dart';
+import 'package:growsistant/auth.dart';
+import 'package:growsistant/pages/home_page.dart';
+
+class WidgetTree extends StatefulWidget {
+  const WidgetTree({super.key});
+
+  @override
+  State<WidgetTree> createState() => _WidgetTreeState();
+}
+
+class _WidgetTreeState extends State<WidgetTree> {
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder(
+      stream: Auth().authStateChanges,
+      // builder: (context, snapshot) => snapshot.hasData ? HomePage(initialPage: true) : LoginPage(),
+      builder: (context, snapshot) => snapshot.hasData ? HomePage() : HomePage(),
+    );
+  }
+}
