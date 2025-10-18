@@ -1,7 +1,8 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:growsistant/theme/constants.dart';
+import 'package:growsistant/utilities/helper.dart';
 import 'package:growsistant/utilities/mqtt_connector.dart';
-import 'package:mqtt_client/mqtt_client.dart';
 import '../widgets/bottom_nav_bar.dart';
 
 class HomePage extends StatefulWidget {
@@ -22,58 +23,68 @@ class _HomePageState extends State<HomePage> {
   double? lux;    // lighting level
   double? hum;    // humidity %
   double? temp;   // °C
+  String? soilStatus;
+  String? luxStatus;
+  String? humStatus;
+  String? tempStatus; 
+  num? healthPercentage;
 
   @override
   void initState() {
     super.initState();
-    debugPrint('🧭 HomePage initState using MqttService');
-    mqtt = MqttService();
+    final clientId = 'GS-F87Y';
+    mqtt = MqttService(clientId: clientId);
     mqtt.connect();
-    mqtt.client.updates?.listen((events) {
-      final rec = events.first.payload as MqttPublishMessage;
-      final topic = events.first.topic;
-      final payload = MqttPublishPayload.bytesToStringAsString(rec.payload.message);
-      if (topic == 'GS-F87Y/sensors') {
-        // setState(...) with decoded sensor values
+    mqtt.messages.listen((event) {
+      final topic = event.keys.first;
+      final payload = event.values.first;
+
+      // Only handle the topic you care about
+      if (topic.endsWith('/sensors')) {
+        final map = jsonDecode(payload) as Map<String, dynamic>;
+        setState(() {
+          soil = (map['soil'] as num?)?.toDouble();
+          soilStatus = statusFromPercent(soil ?? 0, high: 600, low: 500, okLabel: 'Wet', highLabel: 'Too Dry', lowLabel: 'Too Wet');
+          lux  = (map['lux']  as num?)?.toDouble();
+          luxStatus = statusFromPercent(lux ?? 0, high: 500, low: 200, okLabel: 'OK', highLabel: 'Bright', lowLabel: 'Dim');
+          temp = (map['temp'] as num?)?.toDouble();
+          tempStatus = statusFromPercent(temp ?? 0, high: 30, low: 20, okLabel: 'OK', highLabel: 'Hot', lowLabel: 'Cold');
+          hum  = (map['hum']  as num?)?.toDouble();
+          humStatus = statusFromPercent(hum ?? 0, high: 70, low: 30, okLabel: 'OK', highLabel: 'Humid', lowLabel: 'Dry');
+          healthPercentage = (calculateHealthPercentage(
+            current: soil ?? 0,
+            upperThreshold: 600,
+            lowerThreshold: 500,
+            min: 0,
+            max: 1024,
+          ) + calculateHealthPercentage(
+            current: lux ?? 0,
+            upperThreshold: 500,
+            lowerThreshold: 200,
+            min: 0,
+            max: 1024,
+          ) + calculateHealthPercentage(
+            current: temp ?? 0,
+            upperThreshold: 30,
+            lowerThreshold: 20,
+            min: 0,
+            max: 50,
+          ) + calculateHealthPercentage(
+            current: hum ?? 0,
+            upperThreshold: 70,
+            lowerThreshold: 30,
+            min: 0,
+            max: 100,
+          )) / 4;
+        });
       }
     });
-  }
 
-  void _handleSensorPayload(String payload) {
-    try {
-      final map = json.decode(payload) as Map<String, dynamic>;
-      setState(() {
-        soil = _toDouble(map['soil']) ?? soil;
-        lux  = _toDouble(map['lux'])  ?? lux;
-        temp = _toDouble(map['temp']) ?? temp;
-        hum  = _toDouble(map['hum'])  ?? hum;
-        // if the device also reports a light state, you can sync it here:
-        if (map.containsKey('lightOn')) {
-          final v = map['lightOn'];
-          if (v is bool) isLightOn = v;
-          if (v is num)  isLightOn = v != 0;
-          if (v is String) {
-            final s = v.toLowerCase();
-            if (s == 'on' || s == 'true' || s == '1') isLightOn = true;
-            if (s == 'off' || s == 'false' || s == '0') isLightOn = false;
-          }
-        }
-      });
-    } catch (_) {
-      // ignore bad payloads to keep UI stable
-    }
-  }
-
-  double? _toDouble(dynamic v) {
-    if (v == null) return null;
-    if (v is num) return v.toDouble();
-    if (v is String) return double.tryParse(v);
-    return null;
   }
 
   @override
   void dispose() {
-    mqtt.dispose();
+    // mqtt.dispose();
     super.dispose();
   }
 
@@ -97,7 +108,7 @@ class _HomePageState extends State<HomePage> {
     final tempText  = temp != null ? temp!.toStringAsFixed(1) + '°C' : '—';
 
     return Scaffold(
-      backgroundColor: const Color(0xFFE8F5C8),
+      backgroundColor: bg,
 
       bottomNavigationBar: CustomBottomNavBar(
         selectedIndex: selectedIndex,
@@ -106,7 +117,7 @@ class _HomePageState extends State<HomePage> {
 
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.all(20),
+          padding: const EdgeInsets.all(24),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -115,17 +126,16 @@ class _HomePageState extends State<HomePage> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   const Text(
-                    "Bubble sedang",
+                    "Bubble is currently",
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
                   ),
                   Image.asset('assets/icons/notification_none.png', width: 40, height: 40),
                 ],
               ),
               const Text(
-                "happy",
+                "Happy",
                 style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
               ),
-              const SizedBox(height: 20),
 
               // Image + Health + Light toggle ==================
               Row(
@@ -149,28 +159,25 @@ class _HomePageState extends State<HomePage> {
                   ),
                   const SizedBox(width: 20),
 
-                  // Health + ON/OFF
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       const Text(
-                        "Health",
+                        "Condition",
                         style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 8),
-                      const Text(
-                        "96%", // keep static or derive from sensors later
-                        style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold),
+                      Text(
+                        "${healthPercentage?.toStringAsFixed(0) ?? '—'}%",
+                        style: const TextStyle(fontSize: 40, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 20),
 
                       GestureDetector(
                         onTap: () {
                           setState(() => isLightOn = !isLightOn);
-                          // publish ON/OFF command (retain so device can catch up)
-                          // mqtt.publishMessage(
-                          //   "GS-F87Y/lighting",
+                          // mqtt.publish(
                           //   isLightOn ? "ON" : "OFF",
                           // );
                         },
@@ -178,7 +185,7 @@ class _HomePageState extends State<HomePage> {
                           duration: const Duration(milliseconds: 300),
                           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                           decoration: BoxDecoration(
-                            color: isLightOn ? const Color(0xFFB7CF6B) : Colors.grey.shade400,
+                            color: isLightOn ? secondary : Colors.grey.shade400,
                             borderRadius: BorderRadius.circular(30),
                           ),
                           child: Row(
@@ -207,43 +214,45 @@ class _HomePageState extends State<HomePage> {
                 ],
               ),
 
-              const SizedBox(height: 20),
-
               // Grid ===========================================
               Expanded(
                 child: GridView.count(
                   crossAxisCount: 2,
                   crossAxisSpacing: 10,
                   mainAxisSpacing: 10,
-                  padding: const EdgeInsets.all(12),
+                  // padding: const EdgeInsets.all(12),
                   children: [
                     _buildInfoCard(
                       context,
-                      'Water (soil)',
+                      'Soil Moisture',
                       waterText,
                       '/water',
-                      Image.asset('assets/icons/waterdrop.png', height: 50),
+                      Icons.waves_outlined,
+                      rate: soilStatus ?? "",
                     ),
                     _buildInfoCard(
                       context,
                       'Lighting (lux)',
                       lightText,
                       '/lighting',
-                      Image.asset('assets/icons/lightbulb.png', height: 50),
+                      Icons.light_mode_outlined,
+                      rate: luxStatus ?? "",
                     ),
                     _buildInfoCard(
                       context,
                       'Humidity',
                       humidText,
                       '/humidity',
-                      Image.asset('assets/icons/ph-balance.png', height: 50),
+                      Icons.water_drop_outlined,
+                      rate: humStatus ?? "",
                     ),
                     _buildInfoCard(
                       context,
                       'Temperature',
                       tempText,
                       '/temperature',
-                      Image.asset('assets/icons/thermometer.png', height: 50),
+                      Icons.thermostat_outlined,
+                      rate: tempStatus ?? "",
                     ),
                   ],
                 ),
@@ -260,13 +269,14 @@ class _HomePageState extends State<HomePage> {
     String title,
     String value,
     String route,
-    Image image,
-  ) {
+    IconData icon, {
+    String rate = "",
+  }) {
     return GestureDetector(
       onTap: () => Navigator.pushNamed(context, route),
       child: Card(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        elevation: 4,
+        elevation: 2,
         child: Padding(
           padding: const EdgeInsets.all(15),
           child: Stack(
@@ -276,8 +286,8 @@ class _HomePageState extends State<HomePage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    SizedBox(height: 40, width: 30, child: image),
-                    const SizedBox(width: 8),
+                    SizedBox(height: 40, width: 30, child: Icon(icon, size: 40, color: Colors.black54)),
+                    const SizedBox(height: 4),
                     Text(
                       title,
                       style: const TextStyle(
@@ -291,7 +301,7 @@ class _HomePageState extends State<HomePage> {
               ),
               Align(
                 alignment: Alignment.topRight,
-                child: Image.asset('assets/icons/right-arrow.png', height: 20),
+                child: Text(rate, style: const TextStyle(fontSize: 14, color: Colors.black54)),
               ),
               Align(
                 alignment: Alignment.bottomRight,
