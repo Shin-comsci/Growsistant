@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'pages/login_page.dart';
 import 'pages/home_page.dart';
 import 'pages/water_page.dart';
 import 'pages/lightning_page.dart';
@@ -26,7 +27,9 @@ class SmartGardenApp extends StatelessWidget{
       ),
       initialRoute: '/',
       routes: {
-        '/': (context) => const on_Boarding(),
+        // '/': (context) => const on_Boarding(),
+        '/': (context) => const LoginPage(),
+        '/on_boarding': (context) => const on_Boarding(),
         '/scan': (context) => const ScanBarcodePage(),
         '/home': (context) => const HomePage(),
         '/water': (context) => const WaterPage(),
