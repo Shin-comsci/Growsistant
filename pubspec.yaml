@@ -10,13 +10,11 @@ dependencies:
   flutter:
     sdk: flutter
   cupertino_icons: ^1.0.8
-  mqtt_client: 9.8.0
+  mqtt_client: ^10.2.0
   mobile_scanner: ^3.5.7
   lottie: ^2.6.0
   firebase_auth: ^6.1.1
-
-dependency_overrides:
-  mqtt_client: 9.8.0
+  google_fonts: ^6.3.2
 
 dev_dependencies:
   flutter_test:

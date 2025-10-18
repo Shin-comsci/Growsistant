@@ -1,15 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:growsistant/widget_tree.dart';
 import 'pages/home_page.dart';
 import 'pages/water_page.dart';
-import 'pages/lightning_page.dart';
-import 'pages/humidity_page.dart';
-import 'pages/temperature_page.dart';
-import 'pages/onBoarding.dart';
 import 'pages/scan_barcode.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 
-void main(){
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(const SmartGardenApp());
+
 }
 
 class SmartGardenApp extends StatelessWidget{
@@ -18,15 +25,16 @@ class SmartGardenApp extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      title: 'Growsistant',
       debugShowCheckedModeBanner: false,
-      title: 'Smart Garden',
       theme: ThemeData(
-        fontFamily: 'Poppins',
-        primaryColor: const Color(0xFFCCE58D),
+        textTheme: GoogleFonts.poppinsTextTheme(
+          Theme.of(context).textTheme,
+        ),
+        primaryColor: const Color(0xFFCBD5C0),
       ),
-      initialRoute: '/',
+      home: WidgetTree(),
       routes: {
-        '/': (context) => const on_Boarding(),
         '/scan': (context) => const ScanBarcodePage(),
         '/home': (context) => const HomePage(),
         '/water': (context) => const WaterPage(),

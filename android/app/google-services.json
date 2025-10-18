@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "57717820161",
+    "project_id": "growsistant-75bd8",
+    "storage_bucket": "growsistant-75bd8.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:57717820161:android:892cf8c92f130773ee2900",
+        "android_client_info": {
+          "package_name": "com.growsistant.growsistant"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDCedeQRGi5Idf3s7eb1JchBSoEtHhdiUM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

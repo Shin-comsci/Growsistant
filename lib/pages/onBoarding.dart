@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:growsistant/theme/constants.dart';
 import 'scan_barcode.dart';
 
 class on_Boarding extends StatelessWidget{
@@ -80,7 +81,7 @@ class on_Boarding extends StatelessWidget{
                     },
 
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF9CB380),
+                      backgroundColor: bg,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(100),
                       ),
