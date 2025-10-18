@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:growsistant/widget_tree.dart';
+import 'pages/login_page.dart';
 import 'pages/home_page.dart';
 import 'pages/water_page.dart';
 import 'pages/scan_barcode.dart';
@@ -35,6 +36,9 @@ class SmartGardenApp extends StatelessWidget{
       ),
       home: WidgetTree(),
       routes: {
+        // '/': (context) => const on_Boarding(),
+        // '/': (context) => const LoginPage(),
+        '/on_boarding': (context) => const on_Boarding(),
         '/scan': (context) => const ScanBarcodePage(),
         '/home': (context) => const HomePage(),
         '/water': (context) => const WaterPage(),
