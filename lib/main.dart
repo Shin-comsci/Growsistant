@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:growsistant/pages/onBoarding.dart';
 import 'package:growsistant/widget_tree.dart';
 import 'pages/login_page.dart';
 import 'pages/home_page.dart';
@@ -36,8 +37,7 @@ class SmartGardenApp extends StatelessWidget{
       ),
       home: WidgetTree(),
       routes: {
-        // '/': (context) => const on_Boarding(),
-        // '/': (context) => const LoginPage(),
+        // '/': (context) => const LoginPage(), // later will be moved to widget tree (auth status check)
         '/on_boarding': (context) => const on_Boarding(),
         '/scan': (context) => const ScanBarcodePage(),
         '/home': (context) => const HomePage(),
