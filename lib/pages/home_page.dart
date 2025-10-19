@@ -29,6 +29,7 @@ class _HomePageState extends State<HomePage> {
   String? tempStatus; 
   num? healthPercentage;
   String? emotionStatus;
+  String lightControl = "AUTO";
 
   @override
   void initState() {
@@ -55,6 +56,7 @@ class _HomePageState extends State<HomePage> {
             tempStatus = statusFromPercent(temp ?? 0, high: 30, low: 20, okLabel: 'OK', highLabel: 'Hot', lowLabel: 'Cold');
             hum  = (map['hum']  as num?)?.toDouble();
             humStatus = statusFromPercent(hum ?? 0, high: 70, low: 30, okLabel: 'OK', highLabel: 'Humid', lowLabel: 'Dry');
+            isLightOn = map['lamp'] as bool? ?? false;
             healthPercentage = (calculateHealthPercentage(
               current: soil ?? 0,
               upperThreshold: 600,
@@ -178,7 +180,7 @@ class _HomePageState extends State<HomePage> {
                       ),
                     ),
                   ),
-                  const SizedBox(width: 20),
+                  const SizedBox(width: 10),
 
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -197,10 +199,18 @@ class _HomePageState extends State<HomePage> {
 
                       GestureDetector(
                         onTap: () async {
-                          setState(() => isLightOn = !isLightOn);
+                          setState(() => lightControl = (lightControl == "AUTO") ? "ON" : (lightControl == "OFF") ? "AUTO" : "OFF");
+                          String msgPayload = '';
+                          if (lightControl == "AUTO") {
+                            msgPayload = '{"light":$isLightOn,"auto_light":true}';
+                          } else if (lightControl == "ON") {
+                            msgPayload = '{"light":true,"auto_light":false}';
+                          } else {
+                            msgPayload = '{"light":false,"auto_light":false}';
+                          }
                           await mqtt.publish(
                             '${mqtt.clientId}/cmd',
-                            '{"light":"${isLightOn ? "ON" : "OFF"}"}',
+                            msgPayload,
                           );
                           await mqtt.publish(
                             '${mqtt.clientId}/cmd',
@@ -209,30 +219,34 @@ class _HomePageState extends State<HomePage> {
                         },
                         child: AnimatedContainer(
                           duration: const Duration(milliseconds: 300),
+                          width: 120,
                           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                           decoration: BoxDecoration(
-                            color: isLightOn ? secondary : Colors.grey.shade400,
+                            color: lightControl == 'AUTO' ? primary : lightControl == 'ON' ? yellowPoint : Colors.grey,
                             borderRadius: BorderRadius.circular(30),
                           ),
                           child: Row(
-                            mainAxisSize: MainAxisSize.min,
                             children: [
                               Icon(
                                 Icons.lightbulb,
-                                color: isLightOn ? Colors.white : Colors.black54,
+                                color: Colors.white,
                                 size: 22,
                               ),
                               const SizedBox(width: 8),
-                              Text(
-                                isLightOn ? "ON" : "OFF",
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
+                              Expanded(
+                                child: Text(
+                                  lightControl,
+                                  textAlign: TextAlign.center,
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
                                 ),
                               ),
                             ],
                           ),
+
                         ),
                       ),
                     ],
@@ -262,7 +276,7 @@ class _HomePageState extends State<HomePage> {
                       lightText,
                       '/lighting',
                       Icons.light_mode_outlined,
-                      rate: luxStatus ?? "",
+                      rate: isLightOn ? "Light On" : (luxStatus ?? ""),
                     ),
                     _buildInfoCard(
                       context,
