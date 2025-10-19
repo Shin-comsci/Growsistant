@@ -3,6 +3,8 @@ import 'package:growsistant/auth.dart';
 import 'package:growsistant/pages/home_page.dart';
 import 'package:growsistant/pages/login_page.dart';
 import 'package:growsistant/pages/onBoarding.dart';
+import 'package:growsistant/pages/register_page.dart';
+import 'package:growsistant/pages/scan_barcode.dart';
 
 class WidgetTree extends StatefulWidget {
   const WidgetTree({super.key});
