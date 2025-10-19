@@ -42,6 +42,7 @@ class SmartGardenApp extends StatelessWidget{
         '/scan': (context) => const ScanBarcodePage(),
         '/home': (context) => const HomePage(),
         '/water': (context) => const WaterPage(),
+        '/login_page': (context) => const LoginPage(),
         // '/lightning': (context) => const LightControlPage(),
         // '/humidity': (context) => const humidityPage(),
         // '/temperature': (context) => const temperaturePage(),

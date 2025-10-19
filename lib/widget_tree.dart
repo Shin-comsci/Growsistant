@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:growsistant/auth.dart';
 import 'package:growsistant/pages/home_page.dart';
+import 'package:growsistant/pages/login_page.dart';
+import 'package:growsistant/pages/onBoarding.dart';
 
 class WidgetTree extends StatefulWidget {
   const WidgetTree({super.key});
@@ -14,8 +16,7 @@ class _WidgetTreeState extends State<WidgetTree> {
   Widget build(BuildContext context) {
     return StreamBuilder(
       stream: Auth().authStateChanges,
-      // builder: (context, snapshot) => snapshot.hasData ? HomePage() : HomePage(),
-      builder: (context, snapshot) => HomePage(),
+      builder: (context, snapshot) => snapshot.hasData ? HomePage() : on_Boarding(),
     );
   }
 }

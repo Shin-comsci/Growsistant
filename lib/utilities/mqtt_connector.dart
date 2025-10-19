@@ -101,18 +101,21 @@ class MqttService {
   }
 
   void _onConnected() {
-    print('🔗 onConnected — state=${client.connectionStatus?.state}');
+    print('🔗 Connected — state=${client.connectionStatus?.state}');
   }
 
   void _onDisconnected() {
     final origin = client.connectionStatus?.disconnectionOrigin;
-    print('🔌 onDisconnected — origin=$origin, status=${client.connectionStatus}');
+    print('🔌 Disconnected — origin=$origin, status=${client.connectionStatus}');
   }
 
   void _safeDisconnect() {
     try { client.disconnect(); } catch (_) {}
   }
-  void _onSubscribed(String topic) => print('✅ Subscribed: $topic');
+  void _onSubscribed(String topic) {
+    print('✅ Subscribed: $topic');
+    publish("UPD");
+  }
   void _onSubscribeFail(String topic) => print('❌ Subscribe failed: $topic');
   void _onUnsubscribed(String? topic) => print('↩️ Unsubscribed: $topic');
 

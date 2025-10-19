@@ -77,11 +77,12 @@ class on_Boarding extends StatelessWidget{
                   height: 48,
                   child: ElevatedButton(
                     onPressed: () {
-                      Navigator.pushNamed(context, '/scan');
+                      // Navigator.pushNamed(context, '/scan');
+                      Navigator.pushNamed(context, '/login_page');
                     },
 
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: bg,
+                      backgroundColor: primary,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(100),
                       ),

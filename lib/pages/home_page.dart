@@ -28,6 +28,7 @@ class _HomePageState extends State<HomePage> {
   String? humStatus;
   String? tempStatus; 
   num? healthPercentage;
+  String? emotionStatus;
 
   @override
   void initState() {
@@ -41,50 +42,68 @@ class _HomePageState extends State<HomePage> {
 
       // Only handle the topic you care about
       if (topic.endsWith('/sensors')) {
-        final map = jsonDecode(payload) as Map<String, dynamic>;
-        setState(() {
-          soil = (map['soil'] as num?)?.toDouble();
-          soilStatus = statusFromPercent(soil ?? 0, high: 600, low: 500, okLabel: 'Wet', highLabel: 'Too Dry', lowLabel: 'Too Wet');
-          lux  = (map['lux']  as num?)?.toDouble();
-          luxStatus = statusFromPercent(lux ?? 0, high: 500, low: 200, okLabel: 'OK', highLabel: 'Bright', lowLabel: 'Dim');
-          temp = (map['temp'] as num?)?.toDouble();
-          tempStatus = statusFromPercent(temp ?? 0, high: 30, low: 20, okLabel: 'OK', highLabel: 'Hot', lowLabel: 'Cold');
-          hum  = (map['hum']  as num?)?.toDouble();
-          humStatus = statusFromPercent(hum ?? 0, high: 70, low: 30, okLabel: 'OK', highLabel: 'Humid', lowLabel: 'Dry');
-          healthPercentage = (calculateHealthPercentage(
-            current: soil ?? 0,
-            upperThreshold: 600,
-            lowerThreshold: 500,
-            min: 0,
-            max: 1024,
-          ) + calculateHealthPercentage(
-            current: lux ?? 0,
-            upperThreshold: 500,
-            lowerThreshold: 200,
-            min: 0,
-            max: 1024,
-          ) + calculateHealthPercentage(
-            current: temp ?? 0,
-            upperThreshold: 30,
-            lowerThreshold: 20,
-            min: 0,
-            max: 50,
-          ) + calculateHealthPercentage(
-            current: hum ?? 0,
-            upperThreshold: 70,
-            lowerThreshold: 30,
-            min: 0,
-            max: 100,
-          )) / 4;
-        });
+        try {
+          final map = jsonDecode(payload) as Map<String, dynamic>;
+          setState(() {
+            soil = (map['soil'] as num?)?.toDouble();
+            soilStatus = statusFromPercent(soil ?? 0, high: 600, low: 500, okLabel: 'Wet', highLabel: 'Too Dry', lowLabel: 'Too Wet');
+            lux  = (map['lux']  as num?)?.toDouble();
+            luxStatus = !isLightOn ? statusFromPercent(lux ?? 0, high: 500, low: 200, okLabel: 'OK', highLabel: 'Bright', lowLabel: 'Dim') : 'Light On';
+            temp = (map['temp'] as num?)?.toDouble();
+            tempStatus = statusFromPercent(temp ?? 0, high: 30, low: 20, okLabel: 'OK', highLabel: 'Hot', lowLabel: 'Cold');
+            hum  = (map['hum']  as num?)?.toDouble();
+            humStatus = statusFromPercent(hum ?? 0, high: 70, low: 30, okLabel: 'OK', highLabel: 'Humid', lowLabel: 'Dry');
+            healthPercentage = (calculateHealthPercentage(
+              current: soil ?? 0,
+              upperThreshold: 600,
+              lowerThreshold: 500,
+              min: 200,
+              max: 800,
+            ) + (isLightOn ? 100 : calculateHealthPercentage(
+              current: lux ?? 0,
+              upperThreshold: 500,
+              lowerThreshold: 200,
+              min: 0,
+              max: 1024,
+            )) + calculateHealthPercentage(
+              current: temp ?? 0,
+              upperThreshold: 30,
+              lowerThreshold: 20,
+              min: 0,
+              max: 50,
+            ) + calculateHealthPercentage(
+              current: hum ?? 0,
+              upperThreshold: 70,
+              lowerThreshold: 30,
+              min: 0,
+              max: 100,
+            )) / 4;
+            if (healthPercentage != null) {
+              if (healthPercentage! >= 90) {
+                emotionStatus = "🌸 Blooming";
+              } else if (healthPercentage! >= 70) {
+                emotionStatus = "🌱 Doing Well";
+              } else if (healthPercentage! >= 50) {
+                emotionStatus = "🍃 Stable";
+              } else if (healthPercentage! >= 30) {
+                emotionStatus = "🥀 Struggling";
+              } else {
+                emotionStatus = "💀 Needs Attention";
+              }
+            } else {
+              emotionStatus = null;
+            }
+          });
+        } catch (e) {
+          // do nothing
+        }
       }
     });
-
   }
 
   @override
   void dispose() {
-    // mqtt.dispose();
+    mqtt.dispose();
     super.dispose();
   }
 
@@ -132,8 +151,8 @@ class _HomePageState extends State<HomePage> {
                   Image.asset('assets/icons/notification_none.png', width: 40, height: 40),
                 ],
               ),
-              const Text(
-                "Happy",
+              Text(
+                emotionStatus ?? '—',
                 style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
               ),
 
