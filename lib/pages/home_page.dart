@@ -33,9 +33,11 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    final clientId = 'GS-F87Y';
+    final clientId = 'GS-33f3cb';
     mqtt = MqttService(clientId: clientId);
     mqtt.connect();
+    mqtt.client.autoReconnect = true;
+    mqtt.client.resubscribeOnAutoReconnect = true;
     mqtt.messages.listen((event) {
       final topic = event.keys.first;
       final payload = event.values.first;
@@ -194,11 +196,16 @@ class _HomePageState extends State<HomePage> {
                       const SizedBox(height: 20),
 
                       GestureDetector(
-                        onTap: () {
+                        onTap: () async {
                           setState(() => isLightOn = !isLightOn);
-                          // mqtt.publish(
-                          //   isLightOn ? "ON" : "OFF",
-                          // );
+                          await mqtt.publish(
+                            '${mqtt.clientId}/cmd',
+                            '{"light":"${isLightOn ? "ON" : "OFF"}"}',
+                          );
+                          await mqtt.publish(
+                            '${mqtt.clientId}/cmd',
+                            'UPD',
+                          );
                         },
                         child: AnimatedContainer(
                           duration: const Duration(milliseconds: 300),

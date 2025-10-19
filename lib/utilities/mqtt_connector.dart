@@ -31,14 +31,13 @@ class MqttService {
       ..onConnected = _onConnected
       ..onSubscribed = _onSubscribed
       ..onSubscribeFail = _onSubscribeFail
-      ..onUnsubscribed = _onUnsubscribed; // <- keep if your version exposes this
+      ..onUnsubscribed = _onUnsubscribed;
 
     // Force MQTT 3.1.1
     client.setProtocolV311();
 
     client.connectTimeoutPeriod = _connTimeoutMs;
 
-    // Provide a default SecurityContext (system CAs). No client cert required.
     final ctx = SecurityContext.defaultContext;
     client.securityContext = ctx;
   }
@@ -47,9 +46,9 @@ class MqttService {
     print('Connecting to $_host:$_port over TLS as $clientId');
 
     final connMsg = MqttConnectMessage()
-        .withClientIdentifier(clientId)           // important: set it here too
+        .withClientIdentifier("APP-$clientId")
         .authenticateAs(_user, _pass)
-        .startClean()                              // clean session
+        .startClean()
         .withWillQos(MqttQos.atMostOnce);
     client.connectionMessage = connMsg;
 
@@ -90,14 +89,14 @@ class MqttService {
     }
   }
 
-  Future<void> publish(String payload) async {
+  Future<void> publish(String? topicMsg, String payload) async {
     if (client.connectionStatus?.state != MqttConnectionState.connected) {
       print('⚠️ Not connected; skip publish.');
       return;
     }
     final builder = MqttClientPayloadBuilder()..addString(payload);
-    client.publishMessage(topic, MqttQos.atLeastOnce, builder.payload!);
-    print('📤 Published to $topic: $payload');
+    client.publishMessage(topicMsg ?? topic, MqttQos.atLeastOnce, builder.payload!);
+    print('📤 Published to ${topicMsg ?? topic}: $payload');
   }
 
   void _onConnected() {
@@ -114,7 +113,7 @@ class MqttService {
   }
   void _onSubscribed(String topic) {
     print('✅ Subscribed: $topic');
-    publish("UPD");
+    publish('$clientId/cmd', 'UPD');                       // or {"upd":true}
   }
   void _onSubscribeFail(String topic) => print('❌ Subscribe failed: $topic');
   void _onUnsubscribed(String? topic) => print('↩️ Unsubscribed: $topic');
