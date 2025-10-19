@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:growsistant/theme/constants.dart';
 import '../widgets/bottom_nav_bar.dart';
 
 class WaterPage extends StatefulWidget {
@@ -29,7 +30,7 @@ class _WaterPageState extends State<WaterPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFE8F5C8),
+      backgroundColor: bg,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(20),
@@ -73,7 +74,7 @@ class _WaterPageState extends State<WaterPage> {
                             foreground: Paint()
                               ..style = PaintingStyle.stroke
                               ..strokeWidth = 2
-                              ..color = Colors.green.shade700,
+                              ..color = secondary,
                           ),
                         ),
                         Text(
@@ -104,23 +105,25 @@ class _WaterPageState extends State<WaterPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   IconButton(
-                    icon: const Icon(Icons.remove_circle_outline, size: 40),
+                    icon: const Icon(Icons.remove_circle, size: 40, color: secondary),
                     onPressed: () {
                       setState(() {
                         if (tambahAir > 0) tambahAir -= 1;
                       });
                     },
                   ),
+                  SizedBox(width: 16),
                   Text(
                     "${tambahAir.toStringAsFixed(0)}%",
                     style: TextStyle(
                       fontSize: 35,
-                      color: Colors.green.shade700,
+                      color: secondary,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
+                  SizedBox(width: 16),
                   IconButton(
-                    icon: const Icon(Icons.add_circle_outline, size: 40),
+                    icon: const Icon(Icons.add_circle, size: 40, color: secondary),
                     onPressed: () {
                       setState(() {
                         if (tambahAir < 100) tambahAir += 1;
@@ -135,8 +138,8 @@ class _WaterPageState extends State<WaterPage> {
               Center(
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white,
-                    foregroundColor: Colors.green.shade700,
+                    backgroundColor: primary,
+                    foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(100),
                     ),
@@ -147,22 +150,24 @@ class _WaterPageState extends State<WaterPage> {
                     setState(() {
                       waterLevel += tambahAir;
                       if (waterLevel > 100) waterLevel = 100;
-                      tambahAir = 0;
                     });
 
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: const Text("Tanaman sudah disiram"),
-                        backgroundColor: Colors.green.shade700,
+                        content: Text('Berhasil menambahkan air sebesar ${tambahAir.toStringAsFixed(0)}%!'),
                         duration: const Duration(seconds: 2),
                       ),
                     );
+
+                    setState(() {
+                      tambahAir = 0;
+                    });
                   },
                   child: const Text(
                     "Beri Air",
                     style: TextStyle(
-                      fontSize: 24,
-                      color: Colors.green,
+                      fontSize: 16,
+                      color: Colors.white,
                     ),
                   ),
                 ),

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:growsistant/pages/onBoarding.dart';
+import 'package:growsistant/pages/register_page.dart';
+import 'package:growsistant/theme/constants.dart';
 import 'package:growsistant/widget_tree.dart';
 import 'pages/login_page.dart';
 import 'pages/home_page.dart';
@@ -33,7 +35,7 @@ class SmartGardenApp extends StatelessWidget{
         textTheme: GoogleFonts.poppinsTextTheme(
           Theme.of(context).textTheme,
         ),
-        primaryColor: const Color(0xFFCBD5C0),
+        primaryColor: bg,
       ),
       home: WidgetTree(),
       routes: {
@@ -43,6 +45,7 @@ class SmartGardenApp extends StatelessWidget{
         '/home': (context) => const HomePage(),
         '/water': (context) => const WaterPage(),
         '/login_page': (context) => const LoginPage(),
+        '/register_page': (context) => const RegisterPage(),
         // '/lightning': (context) => const LightControlPage(),
         // '/humidity': (context) => const humidityPage(),
         // '/temperature': (context) => const temperaturePage(),

@@ -19,7 +19,7 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 60, vertical: 20),
+      padding: const EdgeInsets.only(left: 60, right: 60, bottom: 20),
       child: Container(
         height: 60,
         decoration: BoxDecoration(
@@ -27,7 +27,7 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar> {
           borderRadius: BorderRadius.circular(40),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.1),
+              color: Colors.black.withValues(alpha: 0.1),
               blurRadius: 6,
               offset: const Offset(0, 3),
             ),
@@ -60,7 +60,7 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar> {
         child: Icon(
           icon,
           size: 26,
-          color: isSelected ? Colors.white : Colors.black.withOpacity(0.6),
+          color: isSelected ? Colors.white : Colors.black.withValues(alpha: 0.6),
         ),
       ),
     );
