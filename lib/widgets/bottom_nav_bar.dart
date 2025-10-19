@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:growsistant/theme/constants.dart';
 
 class CustomBottomNavBar extends StatefulWidget {
   final int selectedIndex;
@@ -53,7 +54,7 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar> {
         width: 50,
         height: 50,
         decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFFA4D68E) : Colors.transparent,
+          color: isSelected ? primary : Colors.transparent,
           shape: BoxShape.circle,
         ),
         child: Icon(
