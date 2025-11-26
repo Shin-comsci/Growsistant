@@ -34,24 +34,29 @@ class LoadingIndicator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(bottom: 40),
-            child: Text(
-              message,
-              style: GoogleFonts.poppins(
-                fontSize: fontSize,
-                color: textColor ?? Colors.black,
+    return Scaffold(
+      backgroundColor: bg,
+      body: SafeArea(
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(bottom: 40),
+                child: Text(
+                  message,
+                  style: GoogleFonts.poppins(
+                    fontSize: fontSize,
+                    color: textColor ?? Colors.black.withValues(alpha: 0.7),
+                  ),
+                ),
               ),
-            ),
+              CircularProgressIndicator(
+                color: indicatorColor,
+              ),
+            ],
           ),
-          CircularProgressIndicator(
-            color: indicatorColor,
-          ),
-        ],
+        ),
       ),
     );
   }

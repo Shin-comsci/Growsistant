@@ -21,9 +21,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-
-  String appVersion = '1.0.0';
-
   late MqttService mqtt;
   late CloudFirestoreService service;
   late String clientId;
@@ -35,6 +32,10 @@ class _HomePageState extends State<HomePage> {
   // Live sensor values (nullable so we can show placeholders until data arrives)
   double? soil;   // treat "Water" as soil moisture reading from device
   double? lux;    // lighting level
+  double prevLux = 0;
+  double prevSoil = 0;
+  double prevHum = 0;
+  double prevTemp = 0;
   double? hum;    // humidity %
   double? temp;   // °C
   String? soilStatus;
@@ -146,14 +147,26 @@ class _HomePageState extends State<HomePage> {
             soil = soilRaw;
             if (soil != null) {
               soil = 100 - mapRangeClamp(value: soil ?? 600, inMin: 400, inMax: 800);
+              if (soil! >= 0) {
+                prevSoil = soil!;
+              }
             }
             soilNotifier.value = soil ?? soilNotifier.value;
             soilStatus = statusFromPercent(soilRaw ?? 0, high: 600, low: 500, okLabel: 'Wet', highLabel: 'Too Dry', lowLabel: 'Too Wet');
             lux  = (map['lux']  as num?)?.toDouble();
+            if (lux != null && lux! >= 0) {
+              prevLux = lux!;
+            }
             luxStatus = !isLightOn ? statusFromPercent(lux ?? 0, high: 500, low: 200, okLabel: 'OK', highLabel: 'Bright', lowLabel: 'Dim') : 'Light On';
             temp = (map['temp'] as num?)?.toDouble();
+            if (temp != null) {
+              prevTemp = temp!;
+            }
             tempStatus = statusFromPercent(temp ?? 0, high: 30, low: 20, okLabel: 'OK', highLabel: 'Hot', lowLabel: 'Cold');
             hum  = (map['hum']  as num?)?.toDouble();
+            if (hum != null) {
+              prevHum = hum!;
+            }
             humStatus = statusFromPercent(hum ?? 0, high: 70, low: 30, okLabel: 'OK', highLabel: 'Humid', lowLabel: 'Dry');
             isLightOn = map['lamp'] as bool? ?? false;
             if (initialFetch) {
@@ -162,41 +175,46 @@ class _HomePageState extends State<HomePage> {
               initialFetch = false;
             }
             healthPercentage = (0.3 * calculateHealthPercentage(
-              current: soilRaw ?? 0,
+              current: soilRaw ?? prevSoil,
               upperThreshold: 600,
               lowerThreshold: 500,
               min: 200,
               max: 800,
             ) + (isLightOn ? 0.3 * 100 : 0.3 * calculateHealthPercentage(
-              current: lux ?? 0,
+              current: lux ?? prevLux,
               upperThreshold: 500,
               lowerThreshold: 200,
               min: 0,
               max: 1024,
             )) + 0.2 * calculateHealthPercentage(
-              current: temp ?? 0,
+              current: temp ?? prevTemp,
               upperThreshold: 30,
               lowerThreshold: 20,
               min: 0,
               max: 50,
             ) + 0.2 * calculateHealthPercentage(
-              current: hum ?? 0,
+              current: hum ?? prevHum,
               upperThreshold: 70,
               lowerThreshold: 30,
               min: 0,
               max: 100,
             ));
             if (healthPercentage != null) {
+              if (healthPercentage! < 0) {
+                healthPercentage = 0;
+              } else if (healthPercentage! > 100) {
+                healthPercentage = 100;
+              }
               if (healthPercentage! >= 90) {
                 emotionStatus = "🌸 Blooming";
               } else if (healthPercentage! >= 70) {
-                emotionStatus = "🌱 Doing Well";
+                emotionStatus = "🌻 Doing Well";
               } else if (healthPercentage! >= 50) {
-                emotionStatus = "🍃 Stable";
+                emotionStatus = "🍀 Stable";
               } else if (healthPercentage! >= 30) {
                 emotionStatus = "🥀 Struggling";
               } else {
-                emotionStatus = "💀 Needs Attention";
+                emotionStatus = "⚠️ Needs Attention";
               }
             } else {
               emotionStatus = null;
@@ -251,16 +269,16 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    if (isLoading) {
+    if (isLoading || emotionStatus == null) {
       return Scaffold(
         body: LoadingIndicator()
       );
     }
     // Pretty display values with sensible fallbacks
-    final waterText = soil != null ? soil!.toStringAsFixed(0) : '—';
-    final lightText = lux  != null ? lux!.toStringAsFixed(2) : '—';
-    final humidText = hum  != null ? hum!.toStringAsFixed(0) : '—';
-    final tempText  = temp != null ? temp!.toStringAsFixed(1) : '—';
+    final waterText = soil != null ? soil!.toStringAsFixed(0) : '•';
+    final lightText = (lux != null && lux! >= 0) ? lux!.toStringAsFixed(2) : '•';
+    final humidText = hum  != null ? hum!.toStringAsFixed(0) : '•';
+    final tempText  = temp != null ? temp!.toStringAsFixed(1) : '•';
 
     return Scaffold(
       backgroundColor: bg,
@@ -285,7 +303,7 @@ class _HomePageState extends State<HomePage> {
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
                   ),
                   IconButton(
-                    icon: const Icon(Icons.notifications_none_rounded, size: 40),
+                    icon: const Icon(Icons.logout_rounded, size: 36),
                     onPressed: () async {
                       await Auth().signOut();
                       Navigator.pushReplacementNamed(context, '/login_page');
@@ -295,7 +313,7 @@ class _HomePageState extends State<HomePage> {
                 ],
               ),
               Text(
-                emotionStatus ?? '—',
+                emotionStatus ?? ' ',
                 style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
               ),
 
@@ -331,7 +349,7 @@ class _HomePageState extends State<HomePage> {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        "${healthPercentage?.toStringAsFixed(0) ?? '—'}%",
+                        "${healthPercentage?.toStringAsFixed(0) ?? '•'}%",
                         style: const TextStyle(fontSize: 40, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 20),

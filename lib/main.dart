@@ -35,6 +35,12 @@ class SmartGardenApp extends StatelessWidget{
         textTheme: GoogleFonts.poppinsTextTheme(
           Theme.of(context).textTheme,
         ),
+        inputDecorationTheme: InputDecorationTheme(),
+        textSelectionTheme: TextSelectionThemeData(
+          cursorColor: primary,
+          selectionHandleColor: primary,
+          selectionColor: primary.withValues(alpha: 0.3),
+        ),
         primaryColor: bg,
       ),
       home: WidgetTree(),

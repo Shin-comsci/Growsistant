@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:growsistant/theme/constants.dart';
-import 'scan_barcode.dart';
 
 class on_Boarding extends StatelessWidget{
   const on_Boarding({super.key});
@@ -8,7 +7,7 @@ class on_Boarding extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: bg,
       body: SafeArea(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -23,19 +22,19 @@ class on_Boarding extends StatelessWidget{
               Column(
                 children: const[
                   Text(
-                    "Welcome",
+                    "Hello there!",
                     style: TextStyle(
                       fontSize: 24, fontWeight: FontWeight.bold,
-                      color: Color(0xFF1E1E1E),
+                      color: Colors.black,
                     ),
                   ),
                   SizedBox(height: 8),
                   Text(
-                    "Make your home green with\n our plants",
+                    "Let's make your home green with\n Growsistant",
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 14,
-                      color: Color(0xFF6B6B6B),
+                      color: Colors.blueGrey,
                     ),
                   ),
                 ],
@@ -50,16 +49,17 @@ class on_Boarding extends StatelessWidget{
                     width: 8,
                     height: 8,
                     decoration: const BoxDecoration(
-                      color: Color(0xFF7BAE73),
+                      color: primary,
                       shape: BoxShape.circle,
                     ),
                   ),
                   // const SizedBox(width: 8),
+                  const SizedBox(width: 8),
                   Container(
                     width: 8,
                     height: 8,
-                    decoration: const BoxDecoration(
-                      color: Color(0xFFD9D9D9),
+                    decoration: BoxDecoration(
+                      color: Colors.grey.withValues(alpha: 0.5),
                       shape: BoxShape.circle,
                     ),
                   ),

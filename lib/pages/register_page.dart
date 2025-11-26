@@ -82,7 +82,7 @@ class _RegisterPageState extends State<RegisterPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: bg,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
@@ -126,7 +126,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 controller: _nameController,
                 decoration: InputDecoration(
                   filled: true,
-                  fillColor: textFieldFill,
+                  fillColor: Colors.white,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(25),
                     borderSide: BorderSide.none,
@@ -144,7 +144,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 controller: _emailController,
                 decoration: InputDecoration(
                   filled: true,
-                  fillColor: textFieldFill,
+                  fillColor: Colors.white,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(25),
                     borderSide: BorderSide.none,
@@ -163,7 +163,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 controller: _passwordController,
                 decoration: InputDecoration(
                   filled: true,
-                  fillColor: textFieldFill,
+                  fillColor: Colors.white,
                   suffixIcon: IconButton(
                     icon: Icon(
                       _obscurePassword ? Icons.visibility_off_outlined : Icons.visibility_outlined,
@@ -189,7 +189,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 controller: _confirmPasswordController,
                 decoration: InputDecoration(
                   filled: true,
-                  fillColor: textFieldFill,
+                  fillColor: Colors.white,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(25),
                     borderSide: BorderSide.none,
@@ -208,12 +208,12 @@ class _RegisterPageState extends State<RegisterPage> {
                       });
                     },
                     fillColor: WidgetStateProperty.all(Colors.white),
-                    side: BorderSide(color: _acceptTerms ? secondary : Colors.grey),
+                    side: BorderSide(color: _acceptTerms ? Colors.black : Colors.grey),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(4),
                     ),
                     
-                    checkColor: _acceptTerms ? secondary : Colors.white,
+                    checkColor: _acceptTerms ? Colors.black : Colors.white,
                   ),
                   const Expanded(
                     child: Text("I accept the terms and privacy policy"),
@@ -250,7 +250,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 width: double.infinity,
                 child: ElevatedButton.icon(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFFDFDE9),
+                    backgroundColor: Colors.white,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
                     padding: const EdgeInsets.symmetric(vertical: 14),
                   ),
@@ -276,7 +276,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       children: [
                         TextSpan(
                           text: "Sign In",
-                          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.deepPurple),
+                          style: TextStyle(fontWeight: FontWeight.bold, color: secondary),
                         ),
                       ],
                     ),
