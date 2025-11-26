@@ -71,7 +71,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: bg,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
@@ -99,7 +99,7 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     SizedBox(height: 4),
                     Text(
-                      "Welcome Back You've Been Missed!",
+                      "You've Been Missed!",
                       style: TextStyle(fontSize: 13, fontWeight: FontWeight.w300, color: Colors.blueGrey),
                     ),
                   ],
@@ -116,7 +116,8 @@ class _LoginPageState extends State<LoginPage> {
                 controller: _emailController,
                 decoration: InputDecoration(
                   filled: true,
-                  fillColor: const Color(0xFFFDFDE9),
+    
+                  fillColor: Colors.white,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(25),
                     borderSide: BorderSide.none,
@@ -135,7 +136,7 @@ class _LoginPageState extends State<LoginPage> {
                 controller: _passwordController,
                 decoration: InputDecoration(
                   filled: true,
-                  fillColor: const Color(0xFFFDFDE9),
+                  fillColor: Colors.white,
                   suffixIcon: IconButton(
                     icon: Icon(
                       _obscurePassword ? Icons.visibility_off_outlined : Icons.visibility_outlined,
@@ -157,7 +158,7 @@ class _LoginPageState extends State<LoginPage> {
                 alignment: Alignment.centerRight,
                 child: TextButton(
                   onPressed: () {},
-                  child: const Text("Recovery Password", style: TextStyle(fontSize: 13)),
+                  child: const Text("Recovery Password", style: TextStyle(fontSize: 13, color: secondary)),
                 ),
               ),
 
@@ -187,7 +188,7 @@ class _LoginPageState extends State<LoginPage> {
                 width: double.infinity,
                 child: ElevatedButton.icon(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFFDFDE9),
+                    backgroundColor: Colors.white,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
                     padding: const EdgeInsets.symmetric(vertical: 14),
                   ),
@@ -213,7 +214,7 @@ class _LoginPageState extends State<LoginPage> {
                       children: [
                         TextSpan(
                           text: "Sign Up For Free",
-                          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.deepPurple),
+                          style: TextStyle(fontWeight: FontWeight.bold, color: secondary),
                         ),
                       ],
                     ),
