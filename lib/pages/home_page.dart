@@ -33,9 +33,9 @@ class _HomePageState extends State<HomePage> {
   double? soil;   // treat "Water" as soil moisture reading from device
   double? lux;    // lighting level
   double prevLux = 0;
-  double prevSoil = 0;
-  double prevHum = 0;
-  double prevTemp = 0;
+  double prevSoil = 500;
+  double prevHum = 50;
+  double prevTemp = 25;
   double? hum;    // humidity %
   double? temp;   // °C
   String? soilStatus;
@@ -182,16 +182,16 @@ class _HomePageState extends State<HomePage> {
               max: 800,
             ) + (isLightOn ? 0.3 * 100 : 0.3 * calculateHealthPercentage(
               current: lux ?? prevLux,
-              upperThreshold: 500,
+              upperThreshold: 999998,
               lowerThreshold: 200,
               min: 0,
-              max: 1024,
+              max: 999999,
             )) + 0.2 * calculateHealthPercentage(
               current: temp ?? prevTemp,
-              upperThreshold: 30,
+              upperThreshold: 32,
               lowerThreshold: 20,
               min: 0,
-              max: 50,
+              max: 52,
             ) + 0.2 * calculateHealthPercentage(
               current: hum ?? prevHum,
               upperThreshold: 70,
